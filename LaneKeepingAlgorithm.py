@@ -532,7 +532,6 @@ while counter < max_ticks:
 
     # determine actual turn to do
     turn_amt = base_turn + proportional + derivative
-    print("Turn Amt: " + str(turn_amt))
     # caps turns to make PWM values
     if 7.2 < turn_amt < 7.8:
         turn_amt = 7.5
