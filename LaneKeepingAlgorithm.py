@@ -436,15 +436,10 @@ steer_pwm = []
 current_speed = go_forward
 
 stopSignCheck = 1
-sightDebug = False
+sightDebug = True
 isStopSignBool = False
 while counter < max_ticks:
     ret, original_frame = video.read()
-
-    # if frame is read correctly ret is True
-    if not ret:
-        print("Can't receive frame (stream end?). Exiting ...")
-        break
 
     frame = cv2.resize(original_frame, (160, 120))
     if sightDebug:
