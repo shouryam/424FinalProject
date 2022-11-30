@@ -12,7 +12,6 @@ line_color = (0, 0, 255)
 line_width = 5
 
 while True:
-    cv.waitKey(1)
     # Capture frame-by-frame
     ret, frame = camera.read()
 
