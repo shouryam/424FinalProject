@@ -153,10 +153,10 @@ def getBoundaries(filename):
 
 def initialize_car():
     # give 7.5% duty at 50Hz to throttle
-    # with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
-    #     filetowrite.write(str(dont_move * FACTOR))
     with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
-        filetowrite.write('1500000')
+        filetowrite.write(str(int(dont_move * FACTOR)))
+    # with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
+    #     filetowrite.write('1500000')
     # wait for car to be ready
     input()
 
