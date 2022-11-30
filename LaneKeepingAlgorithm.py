@@ -10,8 +10,8 @@ import time
 # Throttle
 FACTOR = 20000000 / 100
 throttlePin = "P8_13"
-go_forward = 7.93
-go_faster_addition = 0.022
+go_forward = 7.945
+go_faster_addition = 0.01
 go_faster_tick_delay = 80
 go_faster_tick = 0  # Do not change this here. Code will set this value after seeing stop sign
 dont_move = 7.5
