@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 import math
 import sys
 import time
-import Adafruit_BBIO.PWM as PWM
 
 # based on: https://www.instructables.com/Autonomous-Lane-Keeping-Car-Using-Raspberry-Pi-and/
 
 # Throttle
+FACTOR = 20000000 / 100
 throttlePin = "P8_13"
 go_forward = 7.91
 go_faster_addition = 0.022
@@ -51,42 +51,42 @@ def isRedFloorVisible(frame):
     return isMostlyColor(frame, boundaries)
 
 
-def getTrafficRedLightBoundaries():
-    """
-    Gets the traffic red light hsv boundaries and success boundaries
-    :return: [[lower color and success boundaries for red light], [upper color and success boundaries for red light]]
-    """
-    return getBoundaries("trafficRedBoundaries.txt")
+# def getTrafficRedLightBoundaries():
+#     """
+#     Gets the traffic red light hsv boundaries and success boundaries
+#     :return: [[lower color and success boundaries for red light], [upper color and success boundaries for red light]]
+#     """
+#     return getBoundaries("trafficRedBoundaries.txt")
 
 
-def isTrafficRedLightVisible(frame):
-    """
-    Detects whether or not we can see a stop sign
-    :param frame:
-    :return: [(True is the camera sees a stop light, false otherwise), video output]
-    """
-    print("Checking for traffic stop")
-    boundaries = getTrafficRedLightBoundaries()
-    return isMostlyColor(frame, boundaries)
+# def isTrafficRedLightVisible(frame):
+#     """
+#     Detects whether or not we can see a stop sign
+#     :param frame:
+#     :return: [(True is the camera sees a stop light, false otherwise), video output]
+#     """
+#     print("Checking for traffic stop")
+#     boundaries = getTrafficRedLightBoundaries()
+#     return isMostlyColor(frame, boundaries)
 
 
-def getTrafficGreenLightBoundaries():
-    """
-    Gets the traffic green light hsv boundaries and success boundaries
-    :return: [[lower color and success boundaries for green light], [upper color and success boundaries for green light]]
-    """
-    return getBoundaries("trafficGreenboundaries.txt")
+# def getTrafficGreenLightBoundaries():
+#     """
+#     Gets the traffic green light hsv boundaries and success boundaries
+#     :return: [[lower color and success boundaries for green light], [upper color and success boundaries for green light]]
+#     """
+#     return getBoundaries("trafficGreenboundaries.txt")
 
 
-def isTrafficGreenLightVisible(frame):
-    """
-    Detects whether or not we can see a green traffic light
-    :param frame:
-    :return: [(True is the camera sees a green light, false otherwise), video output]
-    """
-    print("Checking For Green Light")
-    boundaries = getTrafficGreenLightBoundaries()
-    return isMostlyColor(frame, boundaries)
+# def isTrafficGreenLightVisible(frame):
+#     """
+#     Detects whether or not we can see a green traffic light
+#     :param frame:
+#     :return: [(True is the camera sees a green light, false otherwise), video output]
+#     """
+#     print("Checking For Green Light")
+#     boundaries = getTrafficGreenLightBoundaries()
+#     return isMostlyColor(frame, boundaries)
 
 
 def isMostlyColor(image, boundaries):
@@ -153,11 +153,14 @@ def getBoundaries(filename):
 
 def initialize_car():
     # give 7.5% duty at 50Hz to throttle
-    PWM.start(throttlePin, dont_move, frequency=50)
+    with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
+        filetowrite.write(dont_move * FACTOR)
 
     # wait for car to be ready
     input()
-    PWM.start(steeringPin, dont_move, frequency=50)
+
+    with open('/dev/bone/pwm/1/b/duty_cycle', 'w') as filetowrite:
+        filetowrite.write(dont_move * FACTOR)
 
 
 def stop():
@@ -165,7 +168,8 @@ def stop():
     Stops the car
     :return: none
     """
-    PWM.set_duty_cycle(throttlePin, dont_move)
+    with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
+        filetowrite.write(dont_move * FACTOR)
 
 
 def go():
@@ -173,7 +177,8 @@ def go():
     Sends the car forward at a default PWM
     :return: none
     """
-    PWM.set_duty_cycle(throttlePin, go_forward)
+    with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
+        filetowrite.write(go_forward * FACTOR)
 
 
 def go_faster():
@@ -181,16 +186,16 @@ def go_faster():
     Sends the car forward at a faster default PWM
     :return: none
     """
-    PWM.set_duty_cycle(throttlePin, go_forward + go_faster_addition)
-
+    with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
+        filetowrite.write((go_forward + go_faster_addition) * FACTOR)
 
 def go_backwards():
     """
     (Attempts to) send the car backwards
     :return: none
     """
-    PWM.set_duty_cycle(throttlePin, 7.1)
-
+    with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
+        filetowrite.write(7.1 * FACTOR)
 
 def detect_edges(frame):
     # filter for blue lane lines
@@ -442,16 +447,16 @@ while counter < max_ticks:
     # check for stop sign/traffic light every couple ticks
     if ((counter + 1) % stopSignCheck) == 0:
         # check for stop light
-        if not passedStopLight and not atStopLight:
-            trafficStopBool, _ = isTrafficRedLightVisible(frame)
-            print(trafficStopBool)
-            if trafficStopBool:
-                print("detected red light, stopping")
-                stop()
-                atStopLight = True
-                continue
+        # if not passedStopLight and not atStopLight:
+        #     trafficStopBool, _ = isTrafficRedLightVisible(frame)
+        #     print(trafficStopBool)
+        #     if trafficStopBool:
+        #         print("detected red light, stopping")
+        #         stop()
+        #         atStopLight = True
+        #         continue
         # check for the first stop sign
-        elif passedStopLight and not passedFirstStopSign:
+        if passedStopLight and not passedFirstStopSign:
             isStopSignBool, floorSight = isRedFloorVisible(frame)
             if sightDebug:
                 cv2.imshow("floorSight", floorSight)
@@ -483,17 +488,17 @@ while counter < max_ticks:
         go_faster()
         current_speed += go_faster_addition
 
-    # look for green stop light while waiting after red stop light
-    if not passedStopLight and atStopLight:
-        print("waiting at red light")
-        trafficGoBool, _ = isTrafficGreenLightVisible(frame)
-        if trafficGoBool:
-            passedStopLight = True
-            atStopLight = False
-            print("green light!")
-            go()
-        else:
-            continue
+    # # look for green stop light while waiting after red stop light
+    # if not passedStopLight and atStopLight:
+    #     print("waiting at red light")
+    #     trafficGoBool, _ = isTrafficGreenLightVisible(frame)
+    #     if trafficGoBool:
+    #         passedStopLight = True
+    #         atStopLight = False
+    #         print("green light!")
+    #         go()
+    #     else:
+    #         continue
 
     # process the frame to determine the desired steering angle
     # cv2.imshow("original",frame)
@@ -536,7 +541,8 @@ while counter < max_ticks:
         turn_amt = right
 
     # turn!
-    PWM.set_duty_cycle(steeringPin, turn_amt)
+    with open('/dev/bone/pwm/1/b/duty_cycle', 'w') as filetowrite:
+        filetowrite.write(turn_amt * FACTOR)
 
     # take values for graphs
     steer_pwm.append(turn_amt)
@@ -555,11 +561,10 @@ while counter < max_ticks:
 # clean up resources
 video.release()
 cv2.destroyAllWindows()
-PWM.set_duty_cycle(throttlePin, 7.5)
-PWM.set_duty_cycle(steeringPin, 7.5)
-PWM.stop(throttlePin)
-PWM.stop(steeringPin)
-PWM.cleanup()
+with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
+    filetowrite.write('1500000')
+with open('/dev/bone/pwm/1/b/duty_cycle', 'w') as filetowrite:
+    filetowrite.write('1500000')
 
 plot_pd(p_vals, d_vals, err_vals, True)
 plot_pwm(speed_pwm, steer_pwm, err_vals, True)
