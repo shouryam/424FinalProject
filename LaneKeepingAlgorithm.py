@@ -10,7 +10,7 @@ import time
 # Throttle
 FACTOR = 20000000 / 100
 throttlePin = "P8_13"
-go_forward = 7.91
+go_forward = 7.92
 go_faster_addition = 0.01
 go_faster_tick_delay = 80
 go_faster_tick = 0  # Do not change this here. Code will set this value after seeing stop sign
@@ -435,7 +435,7 @@ steer_pwm = []
 current_speed = go_forward
 
 stopSignCheck = 1
-sightDebug = False
+sightDebug = True
 isStopSignBool = False
 while counter < max_ticks:
 
@@ -532,7 +532,7 @@ while counter < max_ticks:
 
     # determine actual turn to do
     turn_amt = base_turn + proportional + derivative
-
+    print("Turn Amt: " + str(turn_amt))
     # caps turns to make PWM values
     if 7.2 < turn_amt < 7.8:
         turn_amt = 7.5
