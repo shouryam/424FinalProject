@@ -536,8 +536,10 @@ while counter < max_ticks:
     if 7.2 < turn_amt < 7.8:
         turn_amt = 7.5
     elif turn_amt > left:
+        print("Turning Left")
         turn_amt = left
     elif turn_amt < right:
+        print("Turning right")
         turn_amt = right
 
     # turn!
