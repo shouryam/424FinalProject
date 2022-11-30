@@ -155,13 +155,11 @@ def initialize_car():
     # give 7.5% duty at 50Hz to throttle
     with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
         filetowrite.write(str(int(dont_move * FACTOR)))
-    # with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
-    #     filetowrite.write('1500000')
     # wait for car to be ready
     input()
 
     with open('/dev/bone/pwm/1/b/duty_cycle', 'w') as filetowrite:
-        filetowrite.write(str(dont_move * FACTOR))
+        filetowrite.write(str(int(dont_move * FACTOR)))
 
 
 def stop():
@@ -170,7 +168,7 @@ def stop():
     :return: none
     """
     with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
-        filetowrite.write(str(dont_move * FACTOR))
+        filetowrite.write(str(int(dont_move * FACTOR)))
 
 
 def go():
@@ -179,7 +177,7 @@ def go():
     :return: none
     """
     with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
-        filetowrite.write(str(go_forward * FACTOR))
+        filetowrite.write(str(int(go_forward * FACTOR)))
 
 
 def go_faster():
@@ -188,7 +186,7 @@ def go_faster():
     :return: none
     """
     with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
-        filetowrite.write(str((go_forward + go_faster_addition) * FACTOR))
+        filetowrite.write(str(int((go_forward + go_faster_addition) * FACTOR)))
 
 def go_backwards():
     """
@@ -196,7 +194,7 @@ def go_backwards():
     :return: none
     """
     with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
-        filetowrite.write(str(7.1 * FACTOR))
+        filetowrite.write(str(int(7.1 * FACTOR)))
 
 def detect_edges(frame):
     # filter for blue lane lines
@@ -543,7 +541,7 @@ while counter < max_ticks:
 
     # turn!
     with open('/dev/bone/pwm/1/b/duty_cycle', 'w') as filetowrite:
-        filetowrite.write(str(turn_amt * FACTOR))
+        filetowrite.write(str(int(turn_amt * FACTOR)))
 
     # take values for graphs
     steer_pwm.append(turn_amt)
