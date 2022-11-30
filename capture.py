@@ -1,7 +1,7 @@
 import numpy as np
 import cv2 as cv
 
-camera = cv.VideoCapture(2)
+camera = cv.VideoCapture(3)
 
 # Checks that the camera has been opened
 if not camera.isOpened():
@@ -40,6 +40,7 @@ while True:
     print(hsv[height//2, width//2])
 
     cv.imshow("frame", line_image)
+
     if cv.waitKey(1) == ord('q'):
         break
 # When everything done, release the capture
