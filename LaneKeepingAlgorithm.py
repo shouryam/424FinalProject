@@ -10,7 +10,7 @@ import time
 # Throttle
 FACTOR = 20000000 / 100
 throttlePin = "P8_13"
-go_forward = 8.2
+go_forward = 8.4
 go_faster_addition = 0.01
 go_faster_tick_delay = 80
 go_faster_tick = 0  # Do not change this here. Code will set this value after seeing stop sign
@@ -46,7 +46,7 @@ def isRedFloorVisible(frame):
     :param frame: Image
     :return: [(True is the camera sees a red on the floor, false otherwise), video output]
     """
-    print("Checking for floor stop")
+    #print("Checking for floor stop")
     boundaries = getRedFloorBoundaries()
     return isMostlyColor(frame, boundaries)
 
@@ -110,7 +110,7 @@ def isMostlyColor(image, boundaries):
 
     #Calculate what percentage of image falls between color boundaries
     percentage_detected = np.count_nonzero(mask) * 100 / np.size(mask)
-    print("percentage_detected " + str(percentage_detected) + " lower " + str(lower) + " upper " + str(upper))
+    #print("percentage_detected " + str(percentage_detected) + " lower " + str(lower) + " upper " + str(upper))
     # If the percentage percentage_detected is betweeen the success boundaries, we return true, otherwise false for result
     result = percentage[0] < percentage_detected <= percentage[1]
     if result:
@@ -247,7 +247,7 @@ def average_slope_intercept(frame, line_segments):
     lane_lines = []
 
     if line_segments is None:
-        print("no line segments detected")
+       # print("no line segments detected")
         return lane_lines
 
     height, width, _ = frame.shape
@@ -261,7 +261,7 @@ def average_slope_intercept(frame, line_segments):
     for line_segment in line_segments:
         for x1, y1, x2, y2 in line_segment:
             if x1 == x2:
-                print("skipping vertical lines (slope = infinity")
+                #print("skipping vertical lines (slope = infinity")
                 continue
 
             fit = np.polyfit((x1, x2), (y1, y2), 1)
@@ -463,6 +463,7 @@ while counter < max_ticks:
                 cv2.imshow("floorSight", floorSight)
             if isStopSignBool:
                 print("detected first stop sign, stopping")
+                time.sleep(1.5)
                 stop()
                 time.sleep(2)
                 passedFirstStopSign = True
@@ -476,10 +477,11 @@ while counter < max_ticks:
         # check for the second stop sign
         elif passedFirstStopSign and counter > secondStopSignTick:
             isStop2SignBool, _ = isRedFloorVisible(frame)
-            print("is a floor stop: ", isStopSignBool)
+           # print("is a floor stop: ", isStopSignBool)
             if isStop2SignBool:
                 # last stop sign detected, exits while loop
                 print("detected second stop sign, stopping")
+                time.sleep(1.5)
                 stop()
                 break
 
@@ -536,10 +538,8 @@ while counter < max_ticks:
     if 7.2 < turn_amt < 7.8:
         turn_amt = 7.5
     elif turn_amt > left:
-        print("Turning Left")
         turn_amt = left
     elif turn_amt < right:
-        print("Turning right")
         turn_amt = right
 
     # turn!
