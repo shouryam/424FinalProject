@@ -457,7 +457,7 @@ while counter < max_ticks:
         #         atStopLight = True
         #         continue
         # check for the first stop sign
-        if passedStopLight and not passedFirstStopSign:
+        if not passedFirstStopSign:
             isStopSignBool, floorSight = isRedFloorVisible(frame)
             if sightDebug:
                 cv2.imshow("floorSight", floorSight)
@@ -474,7 +474,7 @@ while counter < max_ticks:
                 go_faster_tick = counter + go_faster_tick_delay
                 print("first stop finished!")
         # check for the second stop sign
-        elif passedStopLight and passedFirstStopSign and counter > secondStopSignTick:
+        elif passedFirstStopSign and counter > secondStopSignTick:
             isStop2SignBool, _ = isRedFloorVisible(frame)
             print("is a floor stop: ", isStopSignBool)
             if isStop2SignBool:
