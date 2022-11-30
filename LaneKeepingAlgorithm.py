@@ -177,7 +177,7 @@ def go():
     :return: none
     """
     with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
-        filetowrite.write(str(int(go_forward * FACTOR)))
+        filetowrite.write(str(go_forward * FACTOR))
 
 
 def go_faster():
@@ -439,7 +439,7 @@ stopSignCheck = 1
 sightDebug = False
 isStopSignBool = False
 while counter < max_ticks:
-    go()
+
     ret, original_frame = video.read()
 
     frame = cv2.resize(original_frame, (160, 120))
