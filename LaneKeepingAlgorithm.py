@@ -408,7 +408,7 @@ def plot_pwm(speed_pwms, turn_pwms, error, show_img=False):
 input()
 
 # set up video
-video = cv2.VideoCapture(0)
+video = cv2.VideoCapture(2)
 video.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
 video.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
 
@@ -440,6 +440,12 @@ sightDebug = False
 isStopSignBool = False
 while counter < max_ticks:
     ret, original_frame = video.read()
+
+    # if frame is read correctly ret is True
+    if not ret:
+        print("Can't receive frame (stream end?). Exiting ...")
+        break
+
     frame = cv2.resize(original_frame, (160, 120))
     if sightDebug:
         cv2.imshow("Resized Frame", frame)
