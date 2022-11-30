@@ -435,7 +435,7 @@ steer_pwm = []
 current_speed = go_forward
 
 stopSignCheck = 1
-sightDebug = False
+sightDebug = True
 isStopSignBool = False
 while counter < max_ticks:
 
