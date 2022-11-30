@@ -404,7 +404,8 @@ def plot_pwm(speed_pwms, turn_pwms, error, show_img=False):
 
 
 # set up the car throttle and steering PWMs
-initialize_car()
+# initialize_car()
+input()
 
 # set up video
 video = cv2.VideoCapture(0)
