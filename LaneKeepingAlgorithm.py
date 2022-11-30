@@ -439,6 +439,7 @@ stopSignCheck = 1
 sightDebug = False
 isStopSignBool = False
 while counter < max_ticks:
+    go()
     ret, original_frame = video.read()
 
     frame = cv2.resize(original_frame, (160, 120))
