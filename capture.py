@@ -1,7 +1,7 @@
 import numpy as np
 import cv2 as cv
 
-camera = cv.VideoCapture(3)
+camera = cv.VideoCapture(2)
 
 # Checks that the camera has been opened
 if not camera.isOpened():
