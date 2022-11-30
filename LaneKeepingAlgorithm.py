@@ -436,7 +436,7 @@ steer_pwm = []
 current_speed = go_forward
 
 stopSignCheck = 1
-sightDebug = True
+sightDebug = False
 isStopSignBool = False
 while counter < max_ticks:
     ret, original_frame = video.read()
@@ -459,8 +459,8 @@ while counter < max_ticks:
         # check for the first stop sign
         if passedStopLight and not passedFirstStopSign:
             isStopSignBool, floorSight = isRedFloorVisible(frame)
-            # if sightDebug:
-            #     cv2.imshow("floorSight", floorSight)
+            if sightDebug:
+                cv2.imshow("floorSight", floorSight)
             if isStopSignBool:
                 print("detected first stop sign, stopping")
                 stop()
@@ -515,8 +515,8 @@ while counter < max_ticks:
     # calculate changes for PD
     now = time.time()
     dt = now - lastTime
-    # if sightDebug:
-    #     cv2.imshow("Cropped sight", roi)
+    if sightDebug:
+        cv2.imshow("Cropped sight", roi)
     deviation = steering_angle - 90
 
     # PD Code
