@@ -10,7 +10,7 @@ import time
 # Throttle
 FACTOR = 20000000 / 100
 throttlePin = "P8_13"
-go_forward = 7.931
+go_forward = 7.91
 go_faster_addition = 0.01
 go_faster_tick_delay = 80
 go_faster_tick = 0  # Do not change this here. Code will set this value after seeing stop sign
@@ -355,7 +355,7 @@ def get_steering_angle(frame, lane_lines):
     angle_to_mid_radian = math.atan(x_offset / y_offset)
     angle_to_mid_deg = int(angle_to_mid_radian * 180.0 / math.pi)
     steering_angle = angle_to_mid_deg + 90
-    print("Steering angle " + str(steering_angle))
+    #print("Steering angle " + str(steering_angle))
     return steering_angle
 
 
