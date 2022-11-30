@@ -177,7 +177,7 @@ def go():
     :return: none
     """
     with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
-        filetowrite.write(str(go_forward * FACTOR))
+        filetowrite.write(str(int(go_forward * FACTOR)))
 
 
 def go_faster():
