@@ -12,7 +12,7 @@ line_color = (0, 0, 255)
 line_width = 5
 
 while True:
-
+    cv.waitKey(1)
     # Capture frame-by-frame
     ret, frame = camera.read()
 
@@ -41,7 +41,6 @@ while True:
     print(hsv[height//2, width//2])
 
     cv.imshow("frame", line_image)
-
     if cv.waitKey(1) == ord('q'):
         break
 # When everything done, release the capture
