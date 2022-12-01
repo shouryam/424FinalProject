@@ -30,7 +30,7 @@ def isMostlyColor(image, boundaries):
     """
     #Convert to HSV color space
     hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
+    #print(hsv_img[len(hsv_img) // 2, len(hsv_img) // 2])
     #parse out the color boundaries and the success boundaries
     color_boundaries = boundaries[0]
     percentage = boundaries[1]
@@ -46,7 +46,7 @@ def isMostlyColor(image, boundaries):
     # If the percentage percentage_detected is betweeen the success boundaries, we return true, otherwise false for result
     result = percentage[0] < percentage_detected <= percentage[1]
     #if result:
-    #    print(percentage_detected)
+    print(percentage_detected)
     return result, output
 
 def getBoundaries(filename):
@@ -304,7 +304,7 @@ with open('/dev/bone/pwm/1/b/duty_cycle', 'w') as filetowrite:
 FACTOR = 20000000 / 100
 
 # Going
-go_forward = 8.2
+go_forward = 8.0
 dont_move = 7.5
 
 # Steering
@@ -357,6 +357,7 @@ passedStopLight = False
 stopSignTick = 0
 stopSignCheck = 1
 turnRightCount = 0
+stopSignCount = 0
 while counter < max_ticks:
     ret, original_frame = video.read()
     frame = cv2.resize(original_frame, (160, 120))
@@ -373,13 +374,16 @@ while counter < max_ticks:
 
             # If a stop sign is detected, then stop it and sleep for 2 seconds
             if isStopSignBool:
-                time.sleep(0.25)
+                stopSignCount += 1
+                time.sleep(0.10)
                 print("Detected stop sign, stopping now.")
                 stop()
                 time.sleep(2)
                 stopSignTick = counter + 200
                 passedStopLight = True
                 print("Stop sign finished.")
+                if stopSignCount == 2:
+                    break
 
     # If the car has just passed a stop light, then it goes again
     if passedStopLight:
