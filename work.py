@@ -330,8 +330,8 @@ video.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
 time.sleep(1)
 
 # PD variables
-kp = 0.085
-kd = kp * 0.175
+kp = 0.080
+kd = kp * 0.15
 lastTime = 0
 lastError = 0
 
@@ -373,6 +373,7 @@ while counter < max_ticks:
 
             # If a stop sign is detected, then stop it and sleep for 2 seconds
             if isStopSignBool:
+                time.sleep(0.25)
                 print("Detected stop sign, stopping now.")
                 stop()
                 time.sleep(2)
