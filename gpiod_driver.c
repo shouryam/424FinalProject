@@ -17,7 +17,7 @@ int irq_number;
 //refers to button pin P8_14
 struct gpio_desc *button;
 
-static clock_t last_time = NULL;
+static int counter = 0;
 
 /**
  * Interrupt service routine is called, when interrupt is triggered
@@ -26,23 +26,24 @@ static clock_t last_time = NULL;
 static irq_handler_t gpio_irq_handler(unsigned int irq, void *dev_id, struct pt_regs *regs) {
 	printk("In Inturrput handler, should be tirggered by button in pin P8_3\n");
 	//gpiod_set_value(led, (gpiod_get_value(led) + 1) %2);
-	clock_t new_time = clock();
-	if last_time == NULL {
-		last_time = new_time;
-	} else {
-		clock_t current = clock();
-		clock_t diff = current - before;
-		last_time = current;
-        int millseconds = diff * 1000/CLOCKS_PER_SEC;
-		printk("Milliseconds: %d", millseconds);
-		if (millseconds > 1){
-			FILE *fptr;
-			fptr = fopen("speed.txt", "w");
-			fprintf(fptr, "%d", millseconds);
-			fclose(fptr);
-		}	
-	}
-
+	// clock_t new_time = clock();
+	// if last_time == NULL {
+	// 	last_time = new_time;
+	// } else {
+	// 	clock_t current = clock();
+	// 	clock_t diff = current - before;
+	// 	last_time = current;
+    //     int millseconds = diff * 1000/CLOCKS_PER_SEC;
+	// 	printk("Milliseconds: %d", millseconds);
+	// 	if (millseconds > 1){
+	// 		FILE *fptr;
+	// 		fptr = fopen("speed.txt", "w");
+	// 		fprintf(fptr, "%d", millseconds);
+	// 		fclose(fptr);
+	// 	}	
+	// }
+    counter++;
+    module_param(counter, int, S_IRUGO);
 	return (irq_handler_t) IRQ_HANDLED; 
 }
 
