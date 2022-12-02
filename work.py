@@ -48,7 +48,7 @@ def isMostlyColor(image, boundaries):
     # If the percentage percentage_detected is betweeen the success boundaries, we return true, otherwise false for result
     result = percentage[0] < percentage_detected <= percentage[1]
     #if result:
-    print(percentage_detected)
+    #print(percentage_detected)
     return result, output
 
 def getBoundaries(filename):
@@ -99,7 +99,7 @@ def go():
     global current_spped
     current_speed = go_forward
     with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
-        filetowrite.write(str(int(FACTOR * go_forward)))
+        filetowrite.write(str(int(FACTOR * current_speed)))
 
 def detect_edges(frame):
     # filter for blue lane lines
@@ -149,7 +149,7 @@ def average_slope_intercept(frame, line_segments):
     lane_lines = []
 
     if line_segments is None:
-        print("no line segments detected")
+        #print("no line segments detected")
         return lane_lines
 
     height, width, _ = frame.shape
@@ -304,7 +304,7 @@ def go_faster():
     :return: none
     """
     global current_speed
-    current_speed += 0.007
+    current_speed += 0.001
     with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
         filetowrite.write(str(int(FACTOR * (current_speed))))
 
@@ -314,7 +314,7 @@ def go_slower():
     :return: none
     """
     global current_speed
-    current_speed -= 0.007
+    current_speed -= 0.001
     with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
         filetowrite.write(str(int(FACTOR * (current_speed))))
 
@@ -382,7 +382,7 @@ stopSignTick = 0
 stopSignCheck = 1
 turnRightCount = 0
 stopSignCount = 0
-target_spped = 25 
+target_speed = 35 
 while counter < max_ticks:
     ret, original_frame = video.read()
     frame = cv2.resize(original_frame, (160, 120))
@@ -417,9 +417,9 @@ while counter < max_ticks:
     if (counter % 5 == 0):
         with open('/sys/module/gpiod_driver/parameters/diff') as f:
             lines = f.readlines()
-            print(lines)
-            if lines and len(lines) > 0:
-                if  int(lines[0]) > target_spped:
+            print("Difference: ", lines[0])
+            if lines:
+                if  int(lines[0]) > target_speed:
                     go_faster()
                 elif int(lines[0]) < target_speed:
                     go_slower()
@@ -455,15 +455,15 @@ while counter < max_ticks:
     turn_amt = base_turn + proportional + derivative
     # caps turns to make PWM values
     if 7.2 < turn_amt < 7.8:
-        print("Keep STRAIGHT")
+        #print("Keep STRAIGHT")
         turn_amt = 7.5
         turnRightCount = 0
     elif turn_amt > left:
-        print("Turn LEFT")
+        #print("Turn LEFT")
         turn_amt = left
         turnRightCount = 0
     elif turn_amt < right:
-        print("Turn RIGHT")
+        #print("Turn RIGHT")
         turnRightCount += 1
         turn_amt = right
 
