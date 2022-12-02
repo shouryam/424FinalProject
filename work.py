@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import math
 import time
 
+current_speed =  8.0
+
 def getRedFloorBoundaries():
     """
     Gets the hsv boundaries and success boundaries indicating if the floor is red
@@ -94,6 +96,8 @@ def go():
     Sends the car forward at a default PWM
     :return: none
     """
+    global current_spped
+    current_speed = go_forward
     with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
         filetowrite.write(str(int(FACTOR * go_forward)))
 
@@ -294,6 +298,25 @@ def plot_pwm(speed_pwms, turn_pwms, error, show_img=False):
         plt.show()
     plt.clf()
 
+def go_faster():
+    """
+    Sends the car forward at a default PWM
+    :return: none
+    """
+    global current_speed
+    current_speed += 0.007
+    with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
+        filetowrite.write(str(int(FACTOR * (current_speed))))
+
+def go_slower():
+    """
+    Sends the car forward at a default PWM
+    :return: none
+    """
+    global current_speed
+    current_speed -= 0.007
+    with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
+        filetowrite.write(str(int(FACTOR * (current_speed))))
 
 with open('/dev/bone/pwm/1/a/duty_cycle', 'w') as filetowrite:
     filetowrite.write('1500000')
@@ -302,6 +325,7 @@ with open('/dev/bone/pwm/1/b/duty_cycle', 'w') as filetowrite:
     filetowrite.write('1500000')
 
 FACTOR = 20000000 / 100
+
 
 # Going
 go_forward = 8.0
@@ -358,6 +382,7 @@ stopSignTick = 0
 stopSignCheck = 1
 turnRightCount = 0
 stopSignCount = 0
+target_spped = 25 
 while counter < max_ticks:
     ret, original_frame = video.read()
     frame = cv2.resize(original_frame, (160, 120))
@@ -389,7 +414,15 @@ while counter < max_ticks:
     if passedStopLight:
         go()
         passedStopLight = False
-
+    if (counter % 5 == 0):
+        with open('/sys/module/gpiod_driver/parameters/diff') as f:
+            lines = f.readlines()
+            print(lines)
+            if lines and len(lines) > 0:
+                if  int(lines[0]) > target_spped:
+                    go_faster()
+                elif int(lines[0]) < target_speed:
+                    go_slower()
     # process the frame to determine the desired steering angle
     # cv2.imshow("original",frame)
     edges = detect_edges(frame)
@@ -407,7 +440,6 @@ while counter < max_ticks:
     if sightDebug:
         cv2.imshow("Cropped sight", roi)
     deviation = steering_angle - 90
-
     # PD Code
     error = -deviation
     base_turn = 7.5

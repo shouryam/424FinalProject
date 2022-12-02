@@ -1,0 +1,1 @@
+cmd_/home/debian/424FinalProject/gpiod_driver.ko := ld -r -EL  -maarch64elf -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/debian/424FinalProject/gpiod_driver.ko /home/debian/424FinalProject/gpiod_driver.o /home/debian/424FinalProject/gpiod_driver.mod.o;  true

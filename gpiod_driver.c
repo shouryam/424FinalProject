@@ -6,7 +6,7 @@
 #include <linux/init.h>
 #include <linux/gpio.h>
 #include <linux/interrupt.h>
-#include <time.h>
+#include <linux/ktime.h>
 
 //Inturupt handler number
 int irq_number;
@@ -17,21 +17,26 @@ int irq_number;
 //refers to button pin P8_14
 struct gpio_desc *button;
 
-static int counter = 0;
+ktime_t curr_time, previous_time;
+int diff;
+module_param(diff, int, S_IRUGO);
 
 /**
  * Interrupt service routine is called, when interrupt is triggered
  * Got this code from https://github.com/Johannes4Linux/Linux_Driver_Tutorial/blob/main/11_gpio_irq/gpio_irq.c 
  */
 static irq_handler_t gpio_irq_handler(unsigned int irq, void *dev_id, struct pt_regs *regs) {
-	printk("In Inturrput handler, should be tirggered by button in pin P8_3\n");
+	printk("Speed encoder triggered.\n");
 	//gpiod_set_value(led, (gpiod_get_value(led) + 1) %2);
-	// clock_t new_time = clock();
+	//clock_t new_time = clock();
 	// if last_time == NULL {
 	// 	last_time = new_time;
 	// } else {
-	// 	clock_t current = clock();
-	// 	clock_t diff = current - before;
+	curr_time = ktime_get();
+        int temp = ktime_to_ns(curr_time - previous_time) / 1000000;
+        if(temp > 1) { diff = temp; }
+        printk("Difference between triggers: %d\n", diff);
+        previous_time = curr_time;
 	// 	last_time = current;
     //     int millseconds = diff * 1000/CLOCKS_PER_SEC;
 	// 	printk("Milliseconds: %d", millseconds);
@@ -40,20 +45,28 @@ static irq_handler_t gpio_irq_handler(unsigned int irq, void *dev_id, struct pt_
 	// 		fptr = fopen("speed.txt", "w");
 	// 		fprintf(fptr, "%d", millseconds);
 	// 		fclose(fptr);
-	// 	}	
-	// }
-    counter++;
-    module_param(counter, int, S_IRUGO);
+	// 	}
+//	je = jiffies;
+  //      printk("This is the previous time (js): %ld\n", js);
+    //    printk("This is the current time (je): %ld\n", je);
+//	diffj = js - je;
+//	unsigned int check;
+//	check  = jiffies_to_usecs(diffj);
+//	if (check > 1000){
+//		diff = check;
+//	}
+//	js = je;
+//	printk("Difference in rotations is now: %d\n", diff);
 	return (irq_handler_t) IRQ_HANDLED; 
 }
 
 // probe function, takes in the platform device that allows us to get the references to the pins
 static int led_probe(struct platform_device *pdev)
 {
-	printk("Custom GPIOD_Driver.c inserted into debian\n");
+	printk("gpiod_driver has been inserted.\n");
     //Get the pins based on what we called them in the device tree file:  "name"-gpios
 	//led = devm_gpiod_get(&pdev->dev, "led", GPIOD_OUT_LOW);
-	button = devm_gpiod_get(&pdev->dev, "button", GPIOD_IN);
+	button = devm_gpiod_get(&pdev->dev, "userbutton", GPIOD_IN);
 
     //Set waiting period before next input
 	gpiod_set_debounce(button, 1000000);
